@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MarcadorUdla.Data;
 using MarcadorUdla.Models;
+using MarcadorUdla.Backend.Services;
 
 namespace MarcadorUdla.Controllers;
 
@@ -12,19 +13,31 @@ namespace MarcadorUdla.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly IUserService _userService;
 
-    public AdminController(ApplicationDbContext context)
+    public AdminController(ApplicationDbContext context, IUserService userService)
     {
         _context = context;
+        _userService = userService;
+    }
+
+    // Obtener lista de jueces
+    [HttpGet("jueces")]
+    public IActionResult GetJueces()
+    {
+        var jueces = _userService.GetUsersByRole("Juez");
+        return Ok(jueces.Select(j => new { j.Username, j.Role }));
     }
 
     // CRUD Universidades
     [HttpGet("universidades")]
     public async Task<IActionResult> GetUniversidades()
     {
+        Console.WriteLine("[ADMIN] GET /api/admin/universidades");
         var universidades = await _context.Universidades
             .Include(u => u.Jugadores)
             .ToListAsync();
+        Console.WriteLine($"[ADMIN] Devolviendo {universidades.Count} universidades");
         return Ok(universidades);
     }
 
@@ -40,19 +53,93 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("universidades")]
-    public async Task<IActionResult> CreateUniversidad([FromBody] Universidad universidad)
+    public async Task<IActionResult> CreateUniversidad([FromForm] string nombre, [FromForm] string? fechaCreacion, [FromForm] IFormFile? logo)
     {
+        var universidad = new Universidad
+        {
+            Nombre = nombre,
+            FechaCreacion = string.IsNullOrEmpty(fechaCreacion) ? DateTime.UtcNow : DateTime.Parse(fechaCreacion)
+        };
+
+        // Si se subió un logo, guardarlo
+        if (logo != null && logo.Length > 0)
+        {
+            // Validar que sea PNG
+            if (!logo.ContentType.Equals("image/png", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest("Solo se permiten archivos PNG");
+            }
+
+            // Crear directorio si no existe
+            var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "logos");
+            Directory.CreateDirectory(uploadsPath);
+
+            // Generar nombre único
+            var fileName = $"{Guid.NewGuid()}.png";
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            // Guardar archivo
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await logo.CopyToAsync(stream);
+            }
+
+            // Guardar URL relativa en la base de datos
+            universidad.LogoUrl = $"/uploads/logos/{fileName}";
+        }
+
         _context.Universidades.Add(universidad);
         await _context.SaveChangesAsync();
+        
         return CreatedAtAction(nameof(GetUniversidad), new { id = universidad.Id }, universidad);
     }
 
     [HttpPut("universidades/{id}")]
-    public async Task<IActionResult> UpdateUniversidad(int id, [FromBody] Universidad universidad)
+    public async Task<IActionResult> UpdateUniversidad(int id, [FromForm] string nombre, [FromForm] string? fechaCreacion, [FromForm] IFormFile? logo)
     {
-        if (id != universidad.Id) return BadRequest();
+        var universidad = await _context.Universidades.FindAsync(id);
+        if (universidad == null) return NotFound();
 
-        _context.Entry(universidad).State = EntityState.Modified;
+        // Actualizar datos básicos
+        universidad.Nombre = nombre;
+        
+        // Si se subió un nuevo logo, guardarlo
+        if (logo != null && logo.Length > 0)
+        {
+            // Validar que sea PNG
+            if (!logo.ContentType.Equals("image/png", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest("Solo se permiten archivos PNG");
+            }
+
+            // Eliminar logo anterior si existe
+            if (!string.IsNullOrEmpty(universidad.LogoUrl))
+            {
+                var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", universidad.LogoUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    System.IO.File.Delete(oldFilePath);
+                }
+            }
+
+            // Crear directorio si no existe
+            var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "logos");
+            Directory.CreateDirectory(uploadsPath);
+
+            // Generar nombre único
+            var fileName = $"{Guid.NewGuid()}.png";
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            // Guardar archivo
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await logo.CopyToAsync(stream);
+            }
+
+            // Actualizar URL del logo
+            universidad.LogoUrl = $"/uploads/logos/{fileName}";
+        }
+
         await _context.SaveChangesAsync();
         return NoContent();
     }
@@ -111,11 +198,13 @@ public class AdminController : ControllerBase
     [HttpGet("partidos")]
     public async Task<IActionResult> GetPartidos()
     {
+        Console.WriteLine("[ADMIN] GET /api/admin/partidos");
         var partidos = await _context.Partidos
             .Include(p => p.UniversidadLocal)
             .Include(p => p.UniversidadVisitante)
             .Include(p => p.Sets)
             .ToListAsync();
+        Console.WriteLine($"[ADMIN] Devolviendo {partidos.Count} partidos");
         return Ok(partidos);
     }
 

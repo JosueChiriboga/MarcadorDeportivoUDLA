@@ -22,29 +22,20 @@ public class JuezController : ControllerBase
         _hubContext = hubContext;
     }
 
-    // Obtener partidos asignados al juez
+    // Obtener TODOS los partidos (CRUD completo)
     [HttpGet("mis-partidos")]
     public async Task<IActionResult> GetMisPartidos()
     {
-        var username = User.Identity?.Name;
-        Console.WriteLine($"[DEBUG] Username del juez logueado: '{username}'");
-        
-        var todosLosPartidos = await _context.Partidos.ToListAsync();
-        Console.WriteLine($"[DEBUG] Total de partidos en BD: {todosLosPartidos.Count}");
-        
-        foreach (var p in todosLosPartidos)
-        {
-            Console.WriteLine($"[DEBUG] Partido {p.Id}: JuezUsername='{p.JuezUsername}'");
-        }
-        
+        Console.WriteLine("[JUEZ] GET /api/juez/mis-partidos");
+        // Ya no filtramos por juez - mostramos todos los partidos
         var partidos = await _context.Partidos
             .Include(p => p.UniversidadLocal)
             .Include(p => p.UniversidadVisitante)
             .Include(p => p.Sets)
-            .Where(p => p.JuezUsername == username)
+            .OrderByDescending(p => p.FechaHora)
             .ToListAsync();
 
-        Console.WriteLine($"[DEBUG] Partidos filtrados para '{username}': {partidos.Count}");
+        Console.WriteLine($"[JUEZ] Devolviendo {partidos.Count} partidos");
         return Ok(partidos);
     }
 

@@ -89,6 +89,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowAngularDev");
+
+// Habilitar archivos estáticos
+app.UseStaticFiles();
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

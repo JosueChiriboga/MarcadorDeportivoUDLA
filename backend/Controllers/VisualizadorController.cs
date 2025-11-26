@@ -16,6 +16,21 @@ public class VisualizadorController : ControllerBase
         _context = context;
     }
 
+    // Obtener todos los partidos
+    [HttpGet("partidos")]
+    public async Task<IActionResult> GetPartidos()
+    {
+        var partidos = await _context.Partidos
+            .Include(p => p.UniversidadLocal)
+            .Include(p => p.UniversidadVisitante)
+            .Include(p => p.Sets)
+            .OrderByDescending(p => p.FechaHora)
+            .ToListAsync();
+
+        Console.WriteLine($"[VISUALIZADOR] Devolviendo {partidos.Count} partidos");
+        return Ok(partidos);
+    }
+
     // Obtener partidos en juego
     [HttpGet("partidos-activos")]
     public async Task<IActionResult> GetPartidosActivos()

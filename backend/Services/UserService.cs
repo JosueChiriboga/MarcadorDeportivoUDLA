@@ -27,6 +27,11 @@ namespace MarcadorUdla.Backend.Services
             return user;
         }
 
+        public List<User> GetUsersByRole(string role)
+        {
+            return _users.Where(u => u.Role == role).ToList();
+        }
+
         private static string ComputeHash(string input)
         {
             using var sha = SHA256.Create();
