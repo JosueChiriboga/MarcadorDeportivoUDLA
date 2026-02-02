@@ -3,14 +3,28 @@
 This workspace contains a minimal scaffold for Phase 1 requested: a login UI and a protected backend using .NET 9 and Angular 20.
 
 What you get:
+
 - Backend: ASP.NET Core (net9.0) API with JWT authentication and an /api/auth/login endpoint.
 - Frontend: Angular 20 app (zoneless, standalone components, SSR-ready) with a styled login page using colors from the supplied image and three roles (Administrador, Visualizador, Juez). After login the app navigates to a blank page (phase 1 requirement).
 
 Important notes and assumptions:
+
 - This is a small scaffold intended to be extended. Passwords are stored as SHA256 hashes in-memory for demo only. Replace with a proper user store & secure password hashing in production.
 - Replace the JWT secret in `backend/appsettings.json` before deploying to any real environment.
 
 ## Quick start (Windows PowerShell)
+
+## NOTA: Conectar a la base de datos "pgAmin 4", versión 9.9
+
+## Versión Python 3.13.9
+
+## --------- MARCADOR UDLA -------------
+
+## 1er Paso: Iniciar pgAdmin 4 (verificar conexión exitosa)
+
+## 2do Paso: Abrir el programa MARCADORUDLA (Visual Studio Code) e ingresar a "appsettings" para configurar la conexión con su base de datos: USERNAME, PASSWORD, PORT. Verificar en pgAdmin 4. Ingresar despues a "setup-database.ps" para configurar: $pgHost = "localhost", $pgPort = "5432", $pgUser = "postgres", $pgPass = "admin", $dbName = "marcadorudla"
+
+## 3er Paso: Abrir una nueva terminal e ingresar los siguientes comandos:
 
 ### Backend (.NET 9):
 
@@ -24,7 +38,15 @@ dotnet run
 
 By default the API will listen on the ports printed by dotnet (usually http://localhost:5000 or similar).
 
+## 4to Paso: Verificar que no exista error entre la base de datos y la terminal del Backend
+
+## 5to Paso: Una vez que el Backend funciona con exito, abrir una nueva terminal para el Frontend
+
+## 6to Paso: No imgresar los comandos para el Frontend:
+
 ### Frontend (Angular 20):
+
+## (NO INGRESAR ESTOS COMANDOS)
 
 1. Open a PowerShell terminal in `frontend/frontend-app` folder:
 
@@ -34,9 +56,20 @@ npm install
 npx ng serve --open
 ```
 
+## 7mo Paso: Ingresar estos comandos en orden, tomando en cuenta la ubicación en la DESKTOP.
+
+## Copiar y pegar los siguientes comandos en la terminal del Frontend:
+
+### Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+
+### cd "D:\Mis Documentos\Desktop\GitHub\MarcadorUdla\MarcadorUdla\frontend\frontend-app"
+
+### npx ng serve --open
+
 The Angular dev server will start on http://localhost:4200 and automatically open in your browser.
 
 **Note:** For the frontend to call the backend API during development, you'll need to either:
+
 - Add CORS policy on the backend, or
 - Configure an Angular proxy (see below)
 
@@ -90,6 +123,7 @@ MarcadorUdla/
 
 1. **Add CORS or proxy config** so the frontend can call the backend:
    - Backend CORS example (add to `Program.cs` before `app.Run()`):
+
    ```csharp
    app.UseCors(policy => policy
        .WithOrigins("http://localhost:4200")
@@ -97,7 +131,9 @@ MarcadorUdla/
        .AllowAnyHeader()
        .AllowCredentials());
    ```
+
    - Or add Angular proxy: create `frontend/frontend-app/proxy.conf.json`:
+
    ```json
    {
      "/api": {
@@ -106,6 +142,7 @@ MarcadorUdla/
      }
    }
    ```
+
    Then run: `npx ng serve --proxy-config proxy.conf.json --open`
 
 2. **Replace in-memory users** with a proper database and ASP.NET Identity.

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MarcadorUdla")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+47087b1c657c796353d5ade7565c076528a93d76")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6544636177b294dea0eb1f026061501737a8cf4f")]
 [assembly: System.Reflection.AssemblyProductAttribute("MarcadorUdla")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MarcadorUdla")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

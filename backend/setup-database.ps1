@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 $pgHost = "localhost"
 $pgPort = "5432"
 $pgUser = "postgres"
-$pgPass = "AWSDjikl291020"
+$pgPass = "admin"
 $dbName = "marcadorudla"
 
 # Función para verificar si PostgreSQL está instalado
