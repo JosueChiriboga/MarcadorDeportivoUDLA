@@ -1,0 +1,46 @@
+@font-face {
+    font-family: 'Crossfly Expanded Display';
+    src: url('/assets/fonts/Crossfly Display.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+.score,
+.set-actual,
+.tiempo,
+.figma-score-number,
+.figma-score-dash {
+    font-family: 'Crossfly Expanded Display', 'Impact', sans-serif !important;
+}
+
+.figma-score-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: #B62232;
+    border-radius: 32px;
+    width: 260px;
+    height: 100px;
+    margin: 32px auto 24px auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+}
+
+.figma-score-number {
+    font-family: 'Crossfly Expanded Display', 'Impact', sans-serif;
+    font-size: 64px;
+    color: #fff;
+    font-weight: 900;
+    margin: 0 18px;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+
+.figma-score-dash {
+    font-family: 'Crossfly Expanded Display', 'Impact', sans-serif;
+    font-size: 48px;
+    color: #fff;
+    font-weight: 900;
+    margin: 0 8px;
+    line-height: 1;
+}

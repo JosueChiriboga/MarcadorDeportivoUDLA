@@ -1,0 +1,16 @@
+/*
+  Fuente: Crossfly Expanded Display
+  Instrucciones:
+  1. Descarga el archivo de la fuente (por ejemplo, CrossflyExpandedDisplay.ttf) y colócalo en la carpeta ./assets/fonts/.
+  2. Si tienes varios pesos, repite el bloque @font-face para cada uno.
+*/
+
+@font-face {
+    font-family: 'Crossfly Expanded Display';
+    src: url('/assets/fonts/CrossflyExpandedDisplay.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Puedes agregar más variantes si tienes bold, italic, etc. */
